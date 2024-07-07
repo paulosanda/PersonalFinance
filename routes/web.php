@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BankAccountController;
+use App\Http\Controllers\BankAccountTransactionController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -24,6 +25,11 @@ Route::middleware('auth')->group(function () {
     Route::prefix('/bank-accounts')->group(function () {
         Route::get('/', [BankAccountController::class, 'index'])->name('bank-account.index');
         Route::post('/', [BankAccountController::class, 'store'])->name('bank-account.store');
+
+        Route::prefix('transactions')->group(function () {
+            Route::post('/upload/ofx', [BankAccountTransactionController::class, 'upload'])->name('bank-account-transaction.upload');
+            Route::post('/transaction', [BankAccountTransactionController::class, 'store'])->name('bank-account.transaction.store');
+        });
     });
 });
 
