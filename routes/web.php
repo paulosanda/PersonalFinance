@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BankAccountController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -20,7 +21,10 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-//    Route::prefix('/bank-accounts', [])
+    Route::prefix('/bank-accounts')->group(function () {
+        Route::get('/', [BankAccountController::class, 'index'])->name('bank-account.index');
+        Route::post('/', [BankAccountController::class, 'store'])->name('bank-account.store');
+    });
 });
 
 require __DIR__.'/auth.php';
