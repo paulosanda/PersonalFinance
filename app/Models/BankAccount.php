@@ -11,13 +11,22 @@ class BankAccount extends Model
 {
     use HasFactory;
 
+    const TYPE_DEFAULT = 'personal';
+
+    const TYPE_PERSONAL = 'personal';
+
+    const TYPE_COMPANY = 'company';
+
     protected $with = ['bankAccountTransaction', 'bankAccountBalance'];
+
     protected $fillable = [
         'user_id',
+        'type',
         'bank_number',
         'bank_name',
         'bank_branch',
         'bank_account',
+        'bank_account_owner_name',
     ];
 
     public function user(): BelongsTo

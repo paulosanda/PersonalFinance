@@ -11,11 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('bank_account_balances', function (Blueprint $table) {
+        Schema::create('cost_centers', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('bank_account_id')->constrained('bank_accounts');
-            $table->decimal('balance', 20, 2);
-            $table->date('date');
+            $table->enum('type', ['personal', 'company', 'neutral']);
+            $table->string('cost_center_name');
             $table->timestamps();
         });
     }
@@ -25,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('bank_account_balances');
+        Schema::dropIfExists('cost_centers');
     }
 };

@@ -10,16 +10,29 @@ class BankAccountTransaction extends Model
 {
     use HasFactory;
 
+    const CREDIT = 'credit';
+
+    const DEBIT = 'debit';
+
     protected $fillable = [
+        'ofx_type',
         'bank_account_id',
+        'cost_center_id',
         'transaction_type',
-        'fitid',
+        'uniqueId',
+        'history',
         'memo',
         'amount',
+        'date',
     ];
 
     public function bankAccount(): BelongsTo
     {
         return $this->belongsTo(BankAccount::class);
+    }
+
+    public function costCenter(): BelongsTo
+    {
+        return $this->belongsTo(CostCenter::class);
     }
 }

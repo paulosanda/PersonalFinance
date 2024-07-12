@@ -9,10 +9,8 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
 
-
 class BankAccountController extends Controller
 {
-
     public function index(): View|Factory|Application
     {
         $user = auth()->user();
@@ -26,10 +24,11 @@ class BankAccountController extends Controller
     {
         try {
             app(BankAccountCreateAction::class)->execute($request);
+
             return redirect()->route('bank-account.index')
                 ->with('success', 'Conta bancária criada com sucesso!');
         } catch (\Exception $e) {
-            return redirect()->route('bank-accounts.create')
+            return redirect()->route('bank-account.index')
                 ->withErrors(['error' => $e->getMessage()])
                 ->withInput();
         }

@@ -11,17 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('bank_account_transactions', function (Blueprint $table) {
+        Schema::create('suspect_dp_transactions', function (Blueprint $table) {
             $table->id();
-            $table->string('ofx_type')->nullable();
             $table->foreignId('bank_account_id')->constrained('bank_accounts')->cascadeOnDelete();
-            $table->foreignId('cost_center_id')->constrained('cost_centers');
-            $table->string('transaction_type');
-            $table->string('uniqueId')->nullable();
-            $table->string('history')->nullable();
+            $table->string('ofx_type')->nullable();
+            $table->string('uniqueId');
             $table->string('memo')->nullable();
+            $table->string('history')->nullable();
             $table->decimal('amount', 15, 2);
             $table->date('date');
+            $table->enum('status', ['pending', 'resolved'])->default('pending');
             $table->timestamps();
         });
     }
@@ -31,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('bank_account_transactions');
+        Schema::dropIfExists('suspect_dp_transactions');
     }
 };

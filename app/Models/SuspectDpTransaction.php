@@ -4,20 +4,21 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class BankAccountBalance extends Model
+class SuspectDpTransaction extends Model
 {
     use HasFactory;
 
+    const PENDING = 'pending';
+
     protected $fillable = [
         'bank_account_id',
-        'balance',
+        'ofx_type',
+        'uniqueId',
+        'memo',
+        'history',
+        'amount',
         'date',
+        'status',
     ];
-
-    public function bankAccount(): BelongsTo
-    {
-        return $this->belongsTo(BankAccount::class);
-    }
 }
