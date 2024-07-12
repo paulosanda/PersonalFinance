@@ -20,5 +20,9 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@admin.ch',
             'password' => bcrypt('123'),
         ]);
+
+        $this->call([
+            CostCenterSeeder::class,
+        ]);
     }
 }

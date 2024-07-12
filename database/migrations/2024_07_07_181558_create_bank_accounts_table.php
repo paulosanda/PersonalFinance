@@ -14,10 +14,12 @@ return new class extends Migration
         Schema::create('bank_accounts', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->enum('type', ['personal', 'company'])->default('personal');
             $table->string('bank_number');
             $table->string('bank_name');
             $table->string('bank_branch');
             $table->string('bank_account');
+            $table->string('bank_account_owner_name')->nullable();
             $table->timestamps();
         });
     }
