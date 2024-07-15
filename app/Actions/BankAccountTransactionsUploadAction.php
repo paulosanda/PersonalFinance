@@ -150,7 +150,7 @@ class BankAccountTransactionsUploadAction
                 ->where('bank_account_id', $transaction['bank_account_id'])->count();
 
             if ($existingTransaction == 0) {
-                //                dd($transaction);
+
                 BankAccountTransaction::create($transaction);
             }
 
