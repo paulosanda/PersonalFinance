@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -18,7 +19,7 @@ class BankAccount extends Model
     const TYPE_PERSONAL = 'personal';
 
     const TYPE_COMPANY = 'company';
-    const DEFAULT_PERIOD = 5;
+    const DEFAULT_PERIOD = 10;
 
     protected $with = ['latestTransactions', 'latestBalance'];
 
@@ -57,8 +58,12 @@ class BankAccount extends Model
         $dateLimit = now()->subDays($days);
 
         return $this->hasMany(BankAccountTransaction::class)
-            ->where('date', '<=', $dateLimit)
+            ->where('date', '>=', $dateLimit)
             ->orderBy('date', 'desc');
+    }
+    public function paginatedTransactions(int $limit = 10): LengthAwarePaginator
+    {
+        return $this->transaction()->paginate($limit);
     }
 
 }

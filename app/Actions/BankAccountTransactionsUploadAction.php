@@ -151,7 +151,9 @@ class BankAccountTransactionsUploadAction
 
             if ($existingTransaction == 0) {
 
-                BankAccountTransaction::create($transaction);
+                $transaction = BankAccountTransaction::create($transaction);
+
+                app(BankAccountBalanceUpdateAction::class)->execute($transaction);
             }
 
         }
