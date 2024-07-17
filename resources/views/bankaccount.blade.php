@@ -40,7 +40,7 @@
                                 <tbody>
                                 <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                                     <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                        {{ $bankAccount->bank_name }}
+                                        <a href="#{{ $bankAccount->id  }}">{{ $bankAccount->bank_name }}</a>
                                     </th>
                                     <td class="px-6 py-4">
                                         {{ $bankAccount->bank_branch . ' / ' . $bankAccount->bank_account }}
@@ -65,8 +65,13 @@
                     </div>
                 @endif
             </div>
+
+
             @foreach($bankAccounts as $bankAccount)
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mt-2">
+
+
+
+                <div id="{{ $bankAccount->id }}" class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mt-2">
                     <div class="relative overflow-x-auto">
                         <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -77,23 +82,28 @@
                             </tr>
                             <tr>
                                 <th scope="col" class="px-6 py-3">data</th>
+                                <th scope="col" class="px-6 ý-3">tipo</th>
                                 <th scope="col" class="px-6 py-3">histórico</th>
                                 <th scope="col" class="px-6 py-3">valor</th>
                             </tr>
                             </thead>
-                            @php $actualDate = null @endphp
-                            @foreach($bankAccount->latestTransactions->sortBy('date') as $transaction)
+                            @php
+                                $actualDate = null
+                            @endphp
+                            @foreach($bankAccount->latestTransactions as $transaction)
                                 @if($actualDate !== $transaction->date)
                                   @php
-                                        $balance = $transaction->bankAccount->balance()->where('date',(string)$transaction->date)->first() ?
-                                        $transaction->bankAccount->balance()->where('date',(string)$transaction->date)->first()->value('balance') : 'Valor não encontrado'
+
+                                           $balance = $transaction->bankAccount->balance()->where('date',$transaction->date)->first() ?
+                                           $transaction->bankAccount->balance()->where('date','=',$transaction->date)->first() : 'Valor não encontrado';
                                     @endphp
+
                                     <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                                        <th scope="row" colspan="3" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white bg-gray-600">
+                                        <th scope="row" colspan="4" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white bg-gray-600">
                                             <div class="flex justify-end">
                                                 <span>{{ date_format(date_create($transaction->date), 'd/m/Y') }}</span>
 
-                                                <span class="ml-4">R$  {{ $balance }}</span>
+                                                <span class="ml-4">R$  {{ $balance['balance'] }}</span>
                                             </div>
                                         </th>
 
@@ -105,13 +115,18 @@
                                         {{ date_format(date_create($transaction->date), 'd/m/Y')  }}
                                     </th>
                                     <td class="px-6 py-4">
+                                        {{ $transaction->transaction_type }}
+                                    </td>
+                                    <td class="px-6 py-4">
                                       {{ $transaction->history }}
                                     </td>
                                     <td class="px-6 py-4">
                                        {!! formatCurrency($transaction->amount) !!}
                                     </td>
                                 </tr>
-                            @php $actualDate = $transaction->date @endphp
+                            @php
+                                $actualDate = $transaction->date
+                            @endphp
                             @endforeach
 
                             <tbody>
