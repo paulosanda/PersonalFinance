@@ -16,17 +16,127 @@
                 </button>
 
             </div>
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mt-2">
                 @if($bankAccounts != null)
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <ul>
+                    <div class="relative overflow-x-auto">
+                        <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                            <tr>
+                                <th scope="col" class="px-6 py-3">
+                                    Banco
+                                </th>
+                                <th scope="col" class="px-6 py-3">
+                                    Agencia / Conta
+                                </th>
+                                <th scope="col" class="px-6 py-3">
+                                    Titular
+                                </th>
+                                <th scope="col" class="px-6 py-3">
+                                    Saldo atual
+                                </th>
+                            </tr>
+
                         @foreach($bankAccounts as $bankAccount)
-                        <li>{{ $bankAccount->bank_name }}</li>
+                                <tbody>
+                                <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        <a href="#{{ $bankAccount->id  }}">{{ $bankAccount->bank_name }}</a>
+                                    </th>
+                                    <td class="px-6 py-4">
+                                        {{ $bankAccount->bank_branch . ' / ' . $bankAccount->bank_account }}
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        {{ $bankAccount->bank_account_owner_name }}
+                                    </td>
+                                    <td class="px-6 py-4 ">
+                                        {!! formatCurrency($bankAccount->latestBalance->balance) !!}
+                                    </td>
                          @endforeach
-                    </ul>
-                </div>
+                                </tr>
+                                <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                                    <th colspan="3" scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        Saldo consolidado</th>
+                                    <td class="px-6 py- 4 font-medium {{ $bankAccounts->sum(fn($account) => $account->latestBalance->balance) < 0 ? 'text-red-500' : '' }}">
+                                        R$ {!! formatMoneyToInput($bankAccounts->sum(fn($account) => $account->latestBalance->balance)) !!}
+                                    </td>
+                                </tr>
+                                </tbody>
+                        </table>
+                    </div>
                 @endif
             </div>
+
+
+            @foreach($bankAccounts as $bankAccount)
+
+
+
+                <div id="{{ $bankAccount->id }}" class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mt-2">
+                    <div class="relative overflow-x-auto">
+                        <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                            <tr>
+                                <th colspan="4" scope="col" class="px-6 py-3">
+                                    {{ $bankAccount->bank_name }} -  {{ $bankAccount->bank_branch }}/{{ $bankAccount->bank_account }}
+                                </th>
+                            </tr>
+                            <tr>
+                                <th scope="col" class="px-6 py-3">data</th>
+                                <th scope="col" class="px-6 ý-3">tipo</th>
+                                <th scope="col" class="px-6 py-3">histórico</th>
+                                <th scope="col" class="px-6 py-3">valor</th>
+                            </tr>
+                            </thead>
+                            @php
+                                $actualDate = null
+                            @endphp
+                            @foreach($bankAccount->latestTransactions as $transaction)
+                                @if($actualDate !== $transaction->date)
+                                  @php
+
+                                           $balance = $transaction->bankAccount->balance()->where('date',$transaction->date)->first() ?
+                                           $transaction->bankAccount->balance()->where('date','=',$transaction->date)->first() : 'Valor não encontrado';
+                                    @endphp
+
+                                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                                        <th scope="row" colspan="4" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white bg-gray-600">
+                                            <div class="flex justify-end">
+                                                <span>{{ date_format(date_create($transaction->date), 'd/m/Y') }}</span>
+
+                                                <span class="ml-4">R$  {{ $balance['balance'] }}</span>
+                                            </div>
+                                        </th>
+
+                                    </tr>
+                                @endif
+
+                                <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        {{ date_format(date_create($transaction->date), 'd/m/Y')  }}
+                                    </th>
+                                    <td class="px-6 py-4">
+                                        {{ $transaction->transaction_type }}
+                                    </td>
+                                    <td class="px-6 py-4">
+                                      {{ $transaction->history }}
+                                    </td>
+                                    <td class="px-6 py-4">
+                                       {!! formatCurrency($transaction->amount) !!}
+                                    </td>
+                                </tr>
+                            @php
+                                $actualDate = $transaction->date
+                            @endphp
+                            @endforeach
+
+                            <tbody>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            @endforeach
+
         </div>
     </div>
 
@@ -52,7 +162,8 @@
                         <span class="sr-only">Close modal</span>
                     </button>
                 </div>
-                <!-- Modal body -->
+
+                <!-- Modal body-->
                 <div class="p-4 md:p-5">
                     <form method="post" class="space-y-4" action="{{ route('bank-account.store') }}">
 

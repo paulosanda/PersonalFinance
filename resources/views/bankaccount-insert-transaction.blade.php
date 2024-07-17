@@ -28,6 +28,18 @@
             </form>
         </div>
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-3">
+        @if(isset($error))
+            <div>{{ $error }}</div>
+            @endif
+        </div>
+        @if(isset($duplicated))
+            <div class="text-red-800 lg:mb-8 flex justify-center items-center">
+                <b>Atenção! Foram encontrados lançamentos possivelmente duplicados.</b>
+            </div>
+        @endif
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-3">
+
+
 
         </div>
     </div>
